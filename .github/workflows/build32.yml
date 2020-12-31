@@ -18,13 +18,17 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
 
-      - id: msys2
-        uses: jeremyd2019/setup-msys2@v2_32
+      - uses: jeremyd2019/setup-msys2@v2_32
         with:
           msystem: MSYS
-          install: p7zip tar
+          install: p7zip tar mingw-w64-i686-qt-installer-framework
           update: true
           bitness: 32
+
+      - name: Query MSYS2 root dir
+        id: msys2
+        shell: powershell
+        run: Write-Output ('::set-output name=rootdir::{0}' -f (msys2 -c 'cygpath -w /'))
 
       - name: Update
         continue-on-error: true
