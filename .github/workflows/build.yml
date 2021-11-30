@@ -7,6 +7,8 @@ on:
   #schedule:
   #  - cron: '0 3 * * 1,4'
 
+concurrency: nope
+
 jobs:
   build-installer:
     runs-on: windows-latest
@@ -24,9 +26,8 @@ jobs:
       - name: Switch to the main mirror
         shell: msys2 {0}
         run: |
-          sed -e "s|Include = /etc/pacman.d/mirrorlist.mingw32|Server = http://repo.msys2.org/mingw/i686/|g" -i /etc/pacman.conf
-          sed -e "s|Include = /etc/pacman.d/mirrorlist.mingw64|Server = http://repo.msys2.org/mingw/x86_64/|g" -i /etc/pacman.conf
-          sed -e "s|Include = /etc/pacman.d/mirrorlist.msys|Server = http://repo.msys2.org/msys/\$arch/|g" -i /etc/pacman.conf
+          echo 'Server = https://repo.msys2.org/mingw/$repo/' > /etc/pacman.d/mirrorlist.mingw
+          echo 'Server = https://repo.msys2.org/msys/$arch/' > /etc/pacman.d/mirrorlist.msys
           pacman-conf.exe
 
       - name: Update using the main mirror & Check install
@@ -39,14 +40,14 @@ jobs:
         shell: msys2 {0}
         run: |
           bash make-msys2-installer
+
+      - name: Create 'latest' Variants and Checksums
+        run: |
+          mv msys2-base-x86_64-[0-9]*.sfx.exe msys2-base-x86_64-latest.sfx.exe
+          mv msys2-x86_64-[0-9]*.exe msys2-x86_64-latest.exe
+          mv msys2-*.tar.xz msys2-base-x86_64-latest.tar.xz
           sha256sum.exe msys2-*
           sha256sum.exe msys2-* > msys2-checksums.txt
-
-      - name: Create 'latest' Variants
-        run: |
-          cp msys2-base-x86_64-[0-9]*.sfx.exe msys2-base-x86_64-latest.sfx.exe
-          cp msys2-x86_64-[0-9]*.exe msys2-x86_64-latest.exe
-          cp msys2-*.tar.xz msys2-base-x86_64-latest.tar.xz
 
       - name: Upload Results
         uses: actions/upload-artifact@v2
@@ -54,9 +55,14 @@ jobs:
           name: installer
           path: msys2-*
 
-  test-installer-2019:
+  test-installer:
+    name: windows-${{ matrix.image }}
+    runs-on: windows-${{ matrix.image }}
     needs: build-installer
-    runs-on: windows-2019
+    strategy:
+      fail-fast: false
+      matrix:
+        image: [2016, 2019, 2022]
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
@@ -79,34 +85,14 @@ jobs:
         run: |
           C:\msys2-install-test\uninstall.exe pr --confirm-command
 
-  test-installer-2016:
+  test-docker-sfx:
+    name: ltsc-${{ matrix.image }}
+    runs-on: windows-${{ matrix.image }}
     needs: build-installer
-    runs-on: windows-2016
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-
-      - uses: actions/download-artifact@v2
-        with:
-          name: installer
-
-      - name: Install
-        run: |
-          ./msys2-x86_64-latest.exe in --confirm-command --accept-messages --root C:/msys2-install-test
-
-      - name: Test
-        run: |
-          C:\msys2-install-test\usr\bin\bash.exe -lc "pacman --version"
-          C:\msys2-install-test\usr\bin\bash.exe -lc "pacman -Qkv"
-          C:\msys2-install-test\usr\bin\bash.exe -lc "pacman -Syy"
-
-      - name: Uninstall
-        run: |
-          C:\msys2-install-test\uninstall.exe pr --confirm-command
-
-  test-docker-sfx-2019:
-    needs: build-installer
-    runs-on: windows-2019
+    strategy:
+      fail-fast: false
+      matrix:
+        image: [2016, 2019, 2022]
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
@@ -117,28 +103,7 @@ jobs:
 
       - name: Build image
         run: |
-          docker build -t msys2-base -f ./.ci/Dockerfile.2019 .
-
-      - name: Test
-        run: |
-          docker run msys2-base C:\msys64\usr\bin\bash.exe -lc "pacman --version"
-          docker run msys2-base C:\msys64\usr\bin\bash.exe -lc "pacman -Qkv"
-          docker run msys2-base C:\msys64\usr\bin\bash.exe -lc "pacman -Syy"
-
-  test-docker-sfx-2016:
-    needs: build-installer
-    runs-on: windows-2016
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-
-      - uses: actions/download-artifact@v2
-        with:
-          name: installer
-
-      - name: Build image
-        run: |
-          docker build -t msys2-base -f ./.ci/Dockerfile.2016 .
+          docker build -t msys2-base -f ./.ci/Dockerfile.${{ matrix.image }} .
 
       - name: Test
         run: |
@@ -150,11 +115,8 @@ jobs:
     permissions:
       contents: write
     needs:
-      - build-installer
-      - test-docker-sfx-2019
-      - test-docker-sfx-2016
-      - test-installer-2016
-      - test-installer-2019
+      - test-docker-sfx
+      - test-installer
     if: github.ref == 'refs/heads/master'
     runs-on: ubuntu-latest
     steps:
@@ -162,9 +124,8 @@ jobs:
         with:
           name: installer
 
-      - uses: eine/tip@master
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          tag: nightly-x86_64
-          rm: true
-          files: msys2-*
+      - name: Upload Installers
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release upload nightly-x86_64 msys2-* --clobber -R ${{ github.repository }}
