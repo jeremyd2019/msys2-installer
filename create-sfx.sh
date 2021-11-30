@@ -4,8 +4,8 @@
 set -e
 
 # Download and extract https://github.com/mcmilk/7-Zip-zstd
-NAME="7z21.03-zstd-x64"
-CHECKSUM="531b20dfb03d8f30f61ae56a181610bbb6f3cf7cc71dac1d8f95511289de76f3"
+NAME="7z21.03-zstd-x32"
+CHECKSUM="79382f65a6903726157b385ae5e2baae7c9ca39eb157f1d08040ee112e99d8f1"
 DIR="$( cd "$( dirname "$0" )" && pwd )"
 mkdir -p "$DIR/_cache"
 BASE="$DIR/_cache/$NAME"
