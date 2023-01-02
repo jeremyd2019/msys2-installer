@@ -16,8 +16,8 @@ jobs:
 
       - uses: jeremyd2019/setup-msys2@v2_build32
         with:
-          msystem: MSYS
-          install: p7zip tar mingw-w64-i686-qt-installer-framework
+          msystem: MINGW32
+          install: tar mingw-w64-i686-qt-installer-framework mingw-w64-i686-7zip
           update: true
           bitness: 32
 
@@ -27,7 +27,6 @@ jobs:
           sha256sum.exe msys2-* | tee msys2-checksums.txt
           mkdir artifacts
           mv msys2-* artifacts
-          cp /tmp/installer-*.log artifacts
 
       - uses: actions/upload-artifact@v3
         with:

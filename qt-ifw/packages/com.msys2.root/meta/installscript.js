@@ -18,11 +18,36 @@ function isSupported()
     if (systemInfo.kernelType === "winnt") {
         var major = parseInt(systemInfo.kernelVersion.split(".", 1));
         var minor = parseInt(systemInfo.kernelVersion.split(".", 2)[1]);
-        if (major > 6 || (major == 6 && minor >= 1)) {
+        // Windows >= 8.1
+        if (major > 6 || (major == 6 && minor >= 3)) {
             return true;
         }
     }
     return false;
+}
+
+function createShortcuts()
+{
+    var windir = installer.environmentVariable("WINDIR");
+    if (windir === "") {
+        QMessageBox["warning"]( "Error" , "Error", "Could not find windows installation directory");
+        return;
+    }
+
+    component.addOperation("CreateShortcut", "@TargetDir@/mingw32.exe", "@StartMenuDir@/MSYS2 MINGW32.lnk", "iconPath=@TargetDir@/mingw32.exe");
+    component.addOperation("CreateShortcut", "@TargetDir@/mingw64.exe", "@StartMenuDir@/MSYS2 MINGW64.lnk", "iconPath=@TargetDir@/mingw64.exe");
+    component.addOperation("CreateShortcut", "@TargetDir@/ucrt64.exe", "@StartMenuDir@/MSYS2 UCRT64.lnk", "iconPath=@TargetDir@/ucrt64.exe");
+    component.addOperation("CreateShortcut", "@TargetDir@/clang64.exe", "@StartMenuDir@/MSYS2 CLANG64.lnk", "iconPath=@TargetDir@/clang64.exe");
+    component.addOperation("CreateShortcut", "@TargetDir@/clangarm64.exe", "@StartMenuDir@/MSYS2 CLANGARM64.lnk", "iconPath=@TargetDir@/clangarm64.exe");
+    component.addOperation("CreateShortcut", "@TargetDir@/msys2.exe", "@StartMenuDir@/MSYS2 MSYS.lnk", "iconPath=@TargetDir@/msys2.exe");
+
+    if ("@BITNESS@bit" === "32bit") {
+        component.addOperation( "Execute",
+                               ["@TargetDir@\\autorebase.bat"]);
+    }
+
+    component.addOperation( "Execute",
+                           ["@TargetDir@\\usr\\bin\\bash.exe", "--login", "-c", "exit"]);
 }
 
 function Component() {
@@ -40,10 +65,10 @@ function Component() {
     var targetDir = installer.value("TargetDir", systemDrive+"\\msys@BITNESS@")
 
     installer.setValue("TargetDir", targetDir);
-    installer.setDefaultPageVisible(QInstaller.Introduction, false);
-    installer.setDefaultPageVisible(QInstaller.TargetDirectory, true);
-    installer.setDefaultPageVisible(QInstaller.ComponentSelection, false);
-    installer.setDefaultPageVisible(QInstaller.ReadyForInstallation, false);
-    installer.setDefaultPageVisible(QInstaller.StartMenuSelection, true);
-    installer.setDefaultPageVisible(QInstaller.LicenseCheck, false);
+}
+
+Component.prototype.createOperations = function()
+{
+    component.createOperations();
+    createShortcuts();
 }
