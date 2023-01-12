@@ -77,7 +77,7 @@ create_chroot_system() {
     mkdir -p tmp
 
     pacman -Syu --root "${_newmsys}"
-    pacman -S filesystem msys2-runtime --noconfirm --root "${_newmsys}"
+    pacman -S filesystem msys2-runtime-3.3 --noconfirm --root "${_newmsys}"
     pacman -S base --noconfirm --root "${_newmsys}"
     grep -F '[build32]' etc/pacman.conf || sed -i '/\[msys\]/i [build32]\nServer = https://github.com/jeremyd2019/msys2-build32/releases/download/repo\nSigLevel = Optional\n' etc/pacman.conf
   popd > /dev/null
