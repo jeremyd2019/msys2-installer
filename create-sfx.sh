@@ -4,26 +4,26 @@
 set -e
 
 # Download and extract https://github.com/mcmilk/7-Zip-zstd
-NAME="7z21.03-zstd-x64"
-CHECKSUM="531b20dfb03d8f30f61ae56a181610bbb6f3cf7cc71dac1d8f95511289de76f3"
+NAME="7z22.01-zstd-x64"
+CHECKSUM="d542d78397bbed8e77c221f36cad461a0d83f1263b993a7048e81df40f403fb8"
 DIR="$( cd "$( dirname "$0" )" && pwd )"
 mkdir -p "$DIR/_cache"
 BASE="$DIR/_cache/$NAME"
 if [ ! -f "$BASE.exe" ]; then
-    curl --fail -L "https://github.com/mcmilk/7-Zip-zstd/releases/download/v21.03-v1.5.0-R2/$NAME.exe" -o "$BASE.exe"
+    curl --fail -L "https://github.com/mcmilk/7-Zip-zstd/releases/download/v22.01-v1.5.5-R3/$NAME.exe" -o "$BASE.exe"
 fi
 echo "$CHECKSUM $BASE.exe" | sha256sum --quiet --check
 if [ ! -d "$BASE" ]; then
     7z e -o"$BASE" "$DIR/_cache/$NAME.exe"
 fi
 
-NAME="7z21.03-zstd-x32"
-CHECKSUM="79382f65a6903726157b385ae5e2baae7c9ca39eb157f1d08040ee112e99d8f1"
+NAME="7z22.01-zstd-x32"
+CHECKSUM="cc1b8c360656df516684c61da2b23e2185e27c23d255fd3db6a792373dcc1ba3"
 DIR="$( cd "$( dirname "$0" )" && pwd )"
 mkdir -p "$DIR/_cache"
 BASE32="$DIR/_cache/$NAME"
 if [ ! -f "$BASE32.exe" ]; then
-    curl --fail -L "https://github.com/mcmilk/7-Zip-zstd/releases/download/v21.03-v1.5.0-R2/$NAME.exe" -o "$BASE32.exe"
+    curl --fail -L "https://github.com/mcmilk/7-Zip-zstd/releases/download/v22.01-v1.5.5-R3/$NAME.exe" -o "$BASE32.exe"
 fi
 echo "$CHECKSUM $BASE32.exe" | sha256sum --quiet --check
 if [ ! -d "$BASE32" ]; then
