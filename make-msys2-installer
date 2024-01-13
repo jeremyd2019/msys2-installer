@@ -23,7 +23,7 @@ create_installer_archive() {
   local _data="${_ifwroot}"/packages/com.msys2.root/data
   pushd / > /dev/null
     mkdir -p "${_data}"
-    7z a -mx9 -md128m "${_data}/msys${_bitness}.7z" "${_newmsys}/"*
+    /mingw64/bin/7z a -mx9 -md128m "${_data}/msys${_bitness}.7z" "${_newmsys}/"*
   popd > /dev/null
 }
 
