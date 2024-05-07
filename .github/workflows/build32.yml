@@ -17,7 +17,7 @@ jobs:
       - uses: jeremyd2019/setup-msys2@v2_build32
         with:
           msystem: MINGW32
-          install: tar mingw-w64-i686-7zip mingw-w64-x86_64-7zip
+          install: tar mingw-w64-i686-7zip mingw-w64-x86_64-7zip mingw-w64-x86_64-zstd
           update: true
           bitness: 32
 
