@@ -65,7 +65,7 @@ create_installer() {
   echo "[Creating installer...]"
 
   pushd "${_build}" > /dev/null
-    binarycreator \
+    true binarycreator \
       -t "$(command -v installerbase)" \
       -p "${_ifwroot}/packages" \
       -c "${_ifwroot}/config/config.xml" \
@@ -94,7 +94,6 @@ create_chroot_system() {
 
 main() {
   pacman -S --noconfirm --needed \
-    "${MINGW_PACKAGE_PREFIX}-qt-installer-framework" \
     "${MINGW_PACKAGE_PREFIX}-7zip" \
     "${MINGW_PACKAGE_PREFIX}-xz" \
     "${MINGW_PACKAGE_PREFIX}-zstd" \
