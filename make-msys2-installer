@@ -38,7 +38,7 @@ create_archives() {
   xz --test "${_thisdir}/msys2-base-${_arch}-${_date}.tar.xz"
 
   echo "[Creating zstd archive...]"
-  zstd -T0 -22 --ultra --force "${_thisdir}/msys2-base-${_arch}-${_date}.tar" -o "${_thisdir}/msys2-base-${_arch}-${_date}.tar.zst"
+  zstd -T1 -22 --ultra --force "${_thisdir}/msys2-base-${_arch}-${_date}.tar" -o "${_thisdir}/msys2-base-${_arch}-${_date}.tar.zst"
   zstd --test "${_thisdir}/msys2-base-${_arch}-${_date}.tar.zst"
 
   rm "${_thisdir}/msys2-base-${_arch}-${_date}.tar"
