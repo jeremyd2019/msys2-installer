@@ -19,12 +19,13 @@ jobs:
       - name: setup-msys2
         uses: msys2/setup-msys2@v2
         with:
-          msystem: MINGW64
+          msystem: CLANG64
           update: true
           install: >-
             tar
-            mingw-w64-x86_64-qt-installer-framework
-            mingw-w64-x86_64-7zip
+          pacboy: >-
+            qt-installer-framework:p
+            7zip:p
 
       - name: Switch to the main mirror
         shell: msys2 {0}
@@ -49,12 +50,13 @@ jobs:
           mv msys2-base-x86_64-[0-9]*.sfx.exe msys2-base-x86_64-latest.sfx.exe
           mv msys2-x86_64-[0-9]*.exe msys2-x86_64-latest.exe
           mv msys2-*.tar.xz msys2-base-x86_64-latest.tar.xz
+          mv msys2-*.tar.zst msys2-base-x86_64-latest.tar.zst
           mv msys2-*.packages.txt msys2-base-x86_64-latest.packages.txt
           sha256sum.exe msys2-*
           sha256sum.exe msys2-* > msys2-checksums.txt
 
       - name: Upload Results
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: installer
           path: msys2-*
@@ -71,7 +73,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - uses: actions/download-artifact@v3
+      - uses: actions/download-artifact@v4
         with:
           name: installer
 
@@ -107,7 +109,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - uses: actions/download-artifact@v3
+      - uses: actions/download-artifact@v4
         with:
           name: installer
 
@@ -140,7 +142,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - uses: actions/download-artifact@v3
+      - uses: actions/download-artifact@v4
         with:
           name: installer
 
@@ -174,7 +176,7 @@ jobs:
     if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/download-artifact@v3
+      - uses: actions/download-artifact@v4
         with:
           name: installer
 
