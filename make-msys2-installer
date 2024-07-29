@@ -94,7 +94,6 @@ create_chroot_system() {
 
 main() {
   pacman -S --noconfirm --needed \
-    "${MINGW_PACKAGE_PREFIX}-7zip" \
     "${MINGW_PACKAGE_PREFIX}-xz" \
     "${MINGW_PACKAGE_PREFIX}-zstd" \
     "tar"

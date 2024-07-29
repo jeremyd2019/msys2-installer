@@ -14,7 +14,7 @@ if [ ! -f "$BASE.exe" ]; then
 fi
 echo "$CHECKSUM $BASE.exe" | sha256sum --quiet --check
 if [ ! -d "$BASE" ]; then
-    7z e -o"$BASE" "$DIR/_cache/$NAME.exe"
+    /mingw64/bin/7z e -o"$BASE" "$DIR/_cache/$NAME.exe"
 fi
 
 NAME="7z22.01-zstd-x32"
@@ -27,7 +27,7 @@ if [ ! -f "$BASE32.exe" ]; then
 fi
 echo "$CHECKSUM $BASE32.exe" | sha256sum --quiet --check
 if [ ! -d "$BASE32" ]; then
-    7z e -o"$BASE32" "$DIR/_cache/$NAME.exe"
+    /mingw64/bin/7z e -o"$BASE32" "$DIR/_cache/$NAME.exe"
 fi
 
 # Creat SFX installer
