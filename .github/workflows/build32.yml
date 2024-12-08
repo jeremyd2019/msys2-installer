@@ -33,7 +33,7 @@ jobs:
           mkdir artifacts
           mv msys2-* artifacts
 
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         with:
           name: output
           path: artifacts/
