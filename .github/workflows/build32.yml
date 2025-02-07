@@ -21,11 +21,6 @@ jobs:
           update: true
           bitness: 32
 
-      - name: Install msys2-runtime-3.3
-        continue-on-error: true
-        run: |
-          exec pacman --noconfirm --noprogressbar -S --needed msys2-runtime-3.3
-
       - name: Build
         run: |
           bash -x make-msys2-installer
