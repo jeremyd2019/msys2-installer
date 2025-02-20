@@ -8,10 +8,30 @@ on:
   #  - cron: '0 3 * * *'
 
 concurrency: nope
+permissions:
+  contents: read
 
 jobs:
+  zizmor:
+    runs-on: ubuntu-24.04
+
+    permissions:
+      contents: read
+      security-events: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Run zizmor
+        run: pipx run zizmor .
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
   build-installer:
-    runs-on: windows-2022
+    runs-on: windows-2025
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -70,7 +90,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        image: [2019, 2022]
+        image: [2019, 2022, 2025]
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -108,6 +128,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
+        # FIXME: https://github.com/actions/runner-images/issues/11582
         image: [2019, 2022]
     steps:
       - name: Checkout code
@@ -143,7 +164,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        image: [2019, 2022]
+        image: [2019, 2022, 2025]
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -178,6 +199,7 @@ jobs:
     permissions:
       contents: write
     needs:
+      - zizmor
       - test-docker-sfx
       - test-installer
       - test-sfx
