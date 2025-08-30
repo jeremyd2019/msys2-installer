@@ -17,6 +17,12 @@ fi
 _newmsysbase="${_build}/newmsys"
 _newmsys="${_newmsysbase}/msys${_bitness}"
 
+if [ "$MSYSTEM" = "CLANGARM64" ]; then
+    _arch_name="arm64"
+else
+    _arch_name="x86_64"
+fi
+
 create_installer_archive() {
   echo "[Creating installer archive...]"
 
@@ -105,8 +111,10 @@ main() {
   create_installer_archive
   create_installer
 
-  create_archives
-  create_sfx
+  if [ "$_arch_name" != "arm64" ]; then
+    create_archives
+    create_sfx
+  fi
 }
 
 main
